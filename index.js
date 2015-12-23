@@ -107,5 +107,5 @@ function logDiff(message, dataColor) {
 function logError(message) {
   if (!message.error) return;
   var error = util.inspect(message.error, {depth: null});
-  log(red('Error: ' + error));
+  log(color('Error: ' + error, 'red'));
 }
