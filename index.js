@@ -18,14 +18,24 @@ function clientName(agent) {
 }
 
 function onReceive(agent, message) {
-  logHeader(color(clientName(agent) + ' -> Backend ' + agent.clientId, 'magenta'));
-  var dataColor = 'green';
-  onMessage(message, dataColor);
+  if (!agent || !message) return;
+  try {
+    logHeader(color(clientName(agent) + ' -> Backend ' + agent.clientId, 'magenta'));
+    var dataColor = 'green';
+    onMessage(message, dataColor);
+  } catch (err) {
+    console.warn('Logger error', err);
+  }
 }
 function onSend(agent, message) {
-  logHeader(color('Backend -> ' + clientName(agent) + ' ' + agent.clientId, 'blue'));
-  var dataColor = 'white';
-  onMessage(message, dataColor);
+  if (!agent || !message) return;
+  try {
+    logHeader(color('Backend -> ' + clientName(agent) + ' ' + agent.clientId, 'blue'));
+    var dataColor = 'white';
+    onMessage(message, dataColor);
+  } catch (err) {
+    console.warn('Logger error', err);
+  }
 }
 
 function onMessage(message, dataColor) {
