@@ -78,6 +78,7 @@ function logAction(value) {
   log(color(value, 'yellow'));
 }
 function logQuery(message) {
+  if (message.q == null) return;
   var query = util.inspect(message.q, {depth: null});
   log(color(message.c + ' ' + query, 'cyan'));
 }
