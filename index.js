@@ -1,12 +1,15 @@
 var util = require('util');
 var color = require('ansi-color').set;
 
-module.exports = function(backend) {
+module.exports = function(backend, options) {
+  if (!options) options = {};
   backend.use('receive', function(request, next) {
-    onReceive(request.agent, request.data);
+    onReceive(request.agent, request.data, options);
     next();
   });
-  backend.on('send', onSend);
+  backend.on('send', function(agent, message) {
+    onSend(agent, message, options);
+  });
 };
 
 function log(value) {
@@ -17,20 +20,28 @@ function clientName(agent) {
   return (agent.stream.isServer) ? 'Server Client' : 'Remote Client';
 }
 
-function onReceive(agent, message) {
+function getId(agent, message, options) {
+  var id = agent.clientId;
+  if (options.getId) id += ' ' + options.getId(agent, message);
+  return id;
+}
+
+function onReceive(agent, message, options) {
   if (!agent || !message) return;
   try {
-    logHeader(color(clientName(agent) + ' -> Backend ' + agent.clientId, 'magenta'));
+    var id = getId(agent, message, options);
+    logHeader(color(clientName(agent) + ' -> Backend ' + id, 'magenta'));
     var dataColor = 'green';
     onMessage(message, dataColor);
   } catch (err) {
     console.warn('Logger error', err);
   }
 }
-function onSend(agent, message) {
+function onSend(agent, message, options) {
   if (!agent || !message) return;
   try {
-    logHeader(color('Backend -> ' + clientName(agent) + ' ' + agent.clientId, 'blue'));
+    var id = getId(agent, message, options);
+    logHeader(color('Backend -> ' + clientName(agent) + ' ' + id, 'blue'));
     var dataColor = 'white';
     onMessage(message, dataColor);
   } catch (err) {
